@@ -7,7 +7,10 @@ import me.crud.form.MainForm;
 public class Main {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
-            new MainForm().setVisible(true);
+            MainForm mainForm = new MainForm();
+            mainForm.setVisible(true);
+            
+            mainForm.initLoading();
         });
     }
 }
