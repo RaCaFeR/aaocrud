@@ -23,7 +23,8 @@ public class Main {
             mainForm.initLoading();
             mainForm.loadProductsTable();
 
-            /*for (Product p : productManager.getProductsByName("a")) {
+            /* test
+            for (Product p : productManager.getProductsByName("a")) {
                 System.out.println(p.getId());
                 System.out.println(p.getName());
                 System.out.println(p.getPrice());
