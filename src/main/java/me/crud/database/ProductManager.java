@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,13 +63,29 @@ public class ProductManager {
         return null;
     }
 
+    private String treatProductNameForComparison(String s) {
+        s = s.toLowerCase();
+        s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+
+        StringBuilder newName = new StringBuilder();
+        String ignore = "-.@!#$%¨'\"&*()/\\";
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (ignore.indexOf(c) == -1) {
+                newName.append(c);
+            }
+        }
+
+        return newName.toString();
+    }
+
     public ArrayList<Product> getProductsByName(String name) {
-        name = name.toLowerCase();
+        name = treatProductNameForComparison(name);
         ArrayList<Product> result = new ArrayList<>();
 
         for (Map.Entry<Integer, Product> e : products.entrySet()) {
             Product product = e.getValue();
-            if (product.getName().toLowerCase().contains(name)) {
+            if (treatProductNameForComparison(product.getName()).contains(name)) {
                 result.add(product);
             }
         }

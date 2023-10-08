@@ -220,6 +220,7 @@ public class InsertProductForm extends javax.swing.JFrame {
             return;
         }
 
+        MainForm.getInstance().updateProductsTable();
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed
 

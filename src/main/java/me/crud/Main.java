@@ -18,10 +18,11 @@ public class Main {
 
         EventQueue.invokeLater(() -> {
             MainForm mainForm = new MainForm();
+            MainForm.setInstance(mainForm);
             mainForm.setVisible(true);
             
             mainForm.initLoading();
-            mainForm.loadProductsTable();
+            mainForm.updateProductsTable();
 
             /* test
             for (Product p : productManager.getProductsByName("a")) {

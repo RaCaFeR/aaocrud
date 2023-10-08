@@ -9,6 +9,7 @@ import me.crud.database.ProductManager;
 import me.crud.model.Product;
 
 import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -17,7 +18,16 @@ import java.util.Map;
  */
 public class MainForm extends javax.swing.JFrame {
 
+    private static MainForm instance;
     private boolean loaded;
+
+    public static MainForm getInstance() {
+        return MainForm.instance;
+    }
+
+    public static void setInstance(MainForm instance) {
+        MainForm.instance = instance;
+    }
 
     public boolean isLoaded() {
         return loaded;
@@ -85,13 +95,15 @@ public class MainForm extends javax.swing.JFrame {
         }
     }
 
-    public void loadProductsTable() {
+    public void updateProductsTable() {
         DefaultTableModel model = (DefaultTableModel)productsTable.getModel();
         clearProductsTable();
 
+        String filter = searchField.getText();
+
         ProductManager productManager = ProductManager.getInstance();
-        for (Map.Entry<Integer, Product> e : productManager.getProducts().entrySet()) {
-            Product product = e.getValue();
+        ArrayList<Product> searchResult = productManager.getProductsByName(filter);
+        for (Product product : searchResult) {
             model.addRow(product.toRow());
         }
     }
@@ -167,10 +179,16 @@ public class MainForm extends javax.swing.JFrame {
         editButton.setText("Edit Product");
 
         searchField.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        searchField.setText("Search");
+        searchField.setToolTipText("");
+        searchField.setName("Search"); // NOI18N
 
         searchButton.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         searchButton.setText("SEARCH");
+        searchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchButtonActionPerformed(evt);
+            }
+        });
 
         productsTable.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         productsTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -234,9 +252,9 @@ public class MainForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                 .addComponent(productsTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(searchButton))
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(searchButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(searchField))
                 .addGap(18, 18, 18)
                 .addComponent(scrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(35, 35, 35)
@@ -267,6 +285,10 @@ public class MainForm extends javax.swing.JFrame {
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertButtonActionPerformed
         new InsertProductForm().setVisible(true);
     }//GEN-LAST:event_insertButtonActionPerformed
+
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+        updateProductsTable();
+    }//GEN-LAST:event_searchButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
