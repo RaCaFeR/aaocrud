@@ -183,6 +183,11 @@ public class MainForm extends javax.swing.JFrame {
 
         editButton.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         editButton.setText("Edit Product");
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
 
         searchField.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         searchField.setToolTipText("");
@@ -301,6 +306,30 @@ public class MainForm extends javax.swing.JFrame {
             new RemoveProductForm().setVisible(true);
         }
     }//GEN-LAST:event_removeButtonActionPerformed
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        int row = productsTable.getSelectedRow();
+        if (row != -1) {
+            String idString = getProductsTable().getModel().getValueAt(row, 0).toString();
+            if (idString.isEmpty()) {
+                return;
+            }
+
+            int id = -1;
+            try {
+                id = Integer.parseInt(idString);
+            }
+            catch (Exception e) {
+                return;
+            }
+
+            if (id == -1) {
+                return;
+            }
+
+            new EditProductForm(id).setVisible(true);
+        }
+    }//GEN-LAST:event_editButtonActionPerformed
 
     public JTable getProductsTable() {
         return this.productsTable;

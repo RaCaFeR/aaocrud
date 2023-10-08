@@ -119,6 +119,27 @@ public class ProductManager {
         return null;
     }
 
+    public boolean updateProduct(Product product) {
+        if (products.get(product.getId()) != product) return false;
+
+        DatabaseManager databaseManager = DatabaseManager.getInstance();
+        if (databaseManager.isClosed()) return false;
+        Connection connection = databaseManager.getConnection();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("UPDATE products SET name=?, price=?, quantity=? WHERE id=?;");
+            statement.setString(1, product.getName());
+            statement.setFloat(2, product.getPrice());
+            statement.setInt(3, product.getQuantity());
+            statement.setInt(4, product.getId());
+            statement.execute();
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+
     public void deleteProduct(int id) {
         Product product = getProductById(id);
         if (product == null) return;
