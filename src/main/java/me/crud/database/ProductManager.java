@@ -81,11 +81,21 @@ public class ProductManager {
 
     public ArrayList<Product> getProductsByName(String name) {
         name = treatProductNameForComparison(name);
+        String[] words = name.split(" ");
         ArrayList<Product> result = new ArrayList<>();
 
         for (Map.Entry<Integer, Product> e : products.entrySet()) {
             Product product = e.getValue();
-            if (treatProductNameForComparison(product.getName()).contains(name)) {
+            String productName = treatProductNameForComparison(product.getName());
+            boolean failed = false;
+            for (String word : words) {
+                if (!productName.contains(word)) {
+                    failed = true;
+                    break;
+                }
+            }
+
+            if (!failed) {
                 result.add(product);
             }
         }
