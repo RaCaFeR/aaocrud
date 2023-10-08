@@ -3,7 +3,7 @@ package me.crud.database;
 import java.sql.*;
 public class DatabaseManager {
 
-    private DatabaseManager instance;
+    private static DatabaseManager instance;
     private Connection connection;
 
     public void connect() throws SQLException, ClassNotFoundException {
@@ -19,12 +19,12 @@ public class DatabaseManager {
         System.out.println("Successfully closed the database");
     }
     
-    public DatabaseManager getInstance() {
-        return this.instance;
+    public static DatabaseManager getInstance() {
+        return DatabaseManager.instance;
     }
     
-    public void setInstance(DatabaseManager instance) {
-        this.instance = instance;
+    public static void setInstance(DatabaseManager instance) {
+        DatabaseManager.instance = instance;
     }
 
     public Connection getConnection() {
@@ -45,8 +45,8 @@ public class DatabaseManager {
     public void setupDatabase() throws Exception {
         PreparedStatement statement = connection.prepareStatement("""
         CREATE TABLE IF NOT EXISTS products(
-            id INTEGER,
-            name VARCHAR(100) NOT NULL,
+            id INTEGER AUTO_INCREMENT,
+            name VARCHAR(100) NOT NULL UNIQUE,
             price DECIMAL(10, 2) NOT NULL,
             quantity INTEGER,
             

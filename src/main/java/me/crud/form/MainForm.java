@@ -5,6 +5,11 @@
 package me.crud.form;
 
 import me.crud.database.DatabaseManager;
+import me.crud.database.ProductManager;
+import me.crud.model.Product;
+
+import javax.swing.table.DefaultTableModel;
+import java.util.Map;
 
 /**
  *
@@ -32,29 +37,63 @@ public class MainForm extends javax.swing.JFrame {
     
     public void initLoading() {
         if (isLoaded()) return;
+        DatabaseManager databaseManager = DatabaseManager.getInstance();
+        ProductManager productManager = ProductManager.getInstance();
         
         loadingPanel.setVisible(true);
+
         try {
             loadingLabel.setText("Connecting to database...");
-            DatabaseManager databaseManager = new DatabaseManager();
+
             databaseManager.connect();
             if (databaseManager.isClosed()) {
                 loadingLabel.setText("Could not connect to the database");
                 return;
             }
 
-            databaseManager.setInstance(databaseManager);
             databaseManager.setupDatabase();
-            
-            loadingLabel.setText("Successfully connected to database");
         }
         catch (Exception e) {
+            System.out.println("Error connecting to database: " + e.getMessage());
             loadingLabel.setText("An error occurred when connecting to the database");
+            return;
+        }
+
+        try {
+            loadingLabel.setText("Loading products...");
+
+            productManager.loadAllProducts();
+
+            loadingLabel.setText("Successfully loaded all the products");
+        }
+        catch (Exception e) {
+            System.out.println("Error loading products: " + e.getMessage());
+            loadingLabel.setText("An error occurred when loading the products");
             return;
         }
 
         loadingPanel.setVisible(false);
         mainPanel.setVisible(true);
+    }
+
+    public void clearProductsTable() {
+        DefaultTableModel model = (DefaultTableModel)productsTable.getModel();
+        int rows = model.getRowCount();
+        for(int i = rows - 1; i >=0; i--)
+        {
+            model.removeRow(i);
+        }
+    }
+
+    public void loadProductsTable() {
+        DefaultTableModel model = (DefaultTableModel)productsTable.getModel();
+        clearProductsTable();
+
+        ProductManager productManager = ProductManager.getInstance();
+        for (Map.Entry<Integer, Product> e : productManager.getProducts().entrySet()) {
+            Product product = e.getValue();
+            model.addRow(product.toRow());
+        }
     }
 
     /**
@@ -66,6 +105,8 @@ public class MainForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        loadingPanel = new javax.swing.JPanel();
+        loadingLabel = new javax.swing.JLabel();
         mainPanel = new javax.swing.JPanel();
         formTitle = new javax.swing.JLabel();
         productsTitle = new javax.swing.JLabel();
@@ -76,8 +117,30 @@ public class MainForm extends javax.swing.JFrame {
         searchButton = new javax.swing.JButton();
         scrollPane = new javax.swing.JScrollPane();
         productsTable = new javax.swing.JTable();
-        loadingPanel = new javax.swing.JPanel();
-        loadingLabel = new javax.swing.JLabel();
+
+        loadingLabel.setFont(new java.awt.Font("Dialog", 0, 36)); // NOI18N
+        loadingLabel.setText("...");
+
+        javax.swing.GroupLayout loadingPanelLayout = new javax.swing.GroupLayout(loadingPanel);
+        loadingPanel.setLayout(loadingPanelLayout);
+        loadingPanelLayout.setHorizontalGroup(
+            loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1101, Short.MAX_VALUE)
+            .addGroup(loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(loadingPanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(loadingLabel)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        loadingPanelLayout.setVerticalGroup(
+            loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 710, Short.MAX_VALUE)
+            .addGroup(loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(loadingPanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(loadingLabel)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CRUD - Product Manager");
@@ -94,6 +157,11 @@ public class MainForm extends javax.swing.JFrame {
 
         insertButton.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         insertButton.setText("Insert Product");
+        insertButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertButtonActionPerformed(evt);
+            }
+        });
 
         editButton.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         editButton.setText("Edit Product");
@@ -139,6 +207,9 @@ public class MainForm extends javax.swing.JFrame {
                 .addGap(31, 31, 31)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(productsTitle)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
                         .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(mainPanelLayout.createSequentialGroup()
                                 .addComponent(insertButton)
@@ -147,27 +218,22 @@ public class MainForm extends javax.swing.JFrame {
                                 .addGap(35, 35, 35)
                                 .addComponent(removeButton))
                             .addComponent(formTitle)
-                            .addGroup(mainPanelLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(productsTitle)
-                                .addGap(525, 525, 525)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(scrollPane, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, mainPanelLayout.createSequentialGroup()
-                            .addComponent(searchButton)
-                            .addGap(18, 18, 18)
-                            .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 935, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(50, 50, 50))
+                            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(scrollPane, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, mainPanelLayout.createSequentialGroup()
+                                    .addComponent(searchButton)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 935, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(50, Short.MAX_VALUE))))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(formTitle)
-                .addGap(32, 32, 32)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                 .addComponent(productsTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(searchButton))
@@ -181,55 +247,25 @@ public class MainForm extends javax.swing.JFrame {
                 .addGap(40, 40, 40))
         );
 
-        loadingLabel.setFont(new java.awt.Font("Dialog", 0, 36)); // NOI18N
-        loadingLabel.setText("...");
-
-        javax.swing.GroupLayout loadingPanelLayout = new javax.swing.GroupLayout(loadingPanel);
-        loadingPanel.setLayout(loadingPanelLayout);
-        loadingPanelLayout.setHorizontalGroup(
-            loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1101, Short.MAX_VALUE)
-            .addGroup(loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(loadingPanelLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(loadingLabel)
-                    .addGap(0, 0, Short.MAX_VALUE)))
-        );
-        loadingPanelLayout.setVerticalGroup(
-            loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 710, Short.MAX_VALUE)
-            .addGroup(loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(loadingPanelLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(loadingLabel)
-                    .addGap(0, 0, Short.MAX_VALUE)))
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(loadingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(loadingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertButtonActionPerformed
+        new InsertProductForm().setVisible(true);
+    }//GEN-LAST:event_insertButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

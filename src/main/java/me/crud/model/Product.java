@@ -40,4 +40,8 @@ public class Product {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public Object[] toRow() {
+        return new Object[] {this.id, this.name, "$"+this.price, this.quantity};
+    }
 }
