@@ -119,6 +119,27 @@ public class ProductManager {
         return null;
     }
 
+    public void deleteProduct(int id) {
+        Product product = getProductById(id);
+        if (product == null) return;
+
+        DatabaseManager databaseManager = DatabaseManager.getInstance();
+        Connection connection = databaseManager.getConnection();
+        if (databaseManager.isClosed()) return;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM products WHERE id=?;");
+            statement.setInt(1, id);
+            statement.execute();
+        }
+        catch (Exception e) {
+            System.out.println("An error occurred when deleting product (id: " + id + ")");
+            return;
+        }
+
+        products.remove(id);
+    }
+
     public static void setInstance(ProductManager instance) {
         ProductManager.instance = instance;
     }

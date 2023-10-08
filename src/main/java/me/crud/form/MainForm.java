@@ -8,6 +8,7 @@ import me.crud.database.DatabaseManager;
 import me.crud.database.ProductManager;
 import me.crud.model.Product;
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.Map;
@@ -166,6 +167,11 @@ public class MainForm extends javax.swing.JFrame {
 
         removeButton.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         removeButton.setText("Remove Product");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
 
         insertButton.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         insertButton.setText("Insert Product");
@@ -290,6 +296,15 @@ public class MainForm extends javax.swing.JFrame {
         updateProductsTable();
     }//GEN-LAST:event_searchButtonActionPerformed
 
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        if (productsTable.getSelectedRow() != -1) {
+            new RemoveProductForm().setVisible(true);
+        }
+    }//GEN-LAST:event_removeButtonActionPerformed
+
+    public JTable getProductsTable() {
+        return this.productsTable;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton editButton;
